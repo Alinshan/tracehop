@@ -11,7 +11,7 @@ Works as **CLI** & **GUI (Electron)**.
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/tracehop.git
+git clone https://github.com/Alinshan/tracehop.git
 ```
 ```
 cd tracehop
