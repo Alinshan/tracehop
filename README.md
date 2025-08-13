@@ -7,14 +7,3 @@ TraceHop is a **cross-platform tool** to trace URL redirects and visualize every
 Works as **CLI** & **GUI (Electron)**.
 
 ---
-
-## 📦 Installation
-
-```bash
-git clone https://github.com/Alinshan/tracehop.git
-```
-```
-cd tracehop
-```
-```
-npm install
