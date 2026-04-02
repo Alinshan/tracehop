@@ -219,7 +219,7 @@ def get_compiled_rules(custom_rules_path=None):
             with open(custom_rules_path, "r") as f:
                 external = yaml.safe_load(f)
                 if isinstance(external, list):
-                    # Format: [{"id": "name", "regex": "..."}] (Yumi format)
+                    # Format: [{"id": "name", "regex": "..."}] (Tracehop format)
                     for r in external:
                         name = r.get("name") or r.get("id")
                         regex = r.get("regex")

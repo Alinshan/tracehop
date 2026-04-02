@@ -31,6 +31,12 @@ Powered by `httpx` and `asyncio`, Tracehop makes blindingly fast concurrent requ
 </details>
 
 <details open>
+<summary><b>🔍 Phase 0: Technical Intelligence (New in v3.1)</b></summary>
+<br>
+Perform deep technical reconnaissance before starting the scan: DNS resolution (A, MX, TXT, NS), SSL/TLS audit, WHOIS registration details, and automatic <b>GeoIP Mapping</b> to trace target infrastructure.
+</details>
+
+<details open>
 <summary><b>🌐 Subdomain Discovery (New in v2.0)</b></summary>
 <br>
 Passively query the `crt.sh` Certificate Transparency logs to discover all active subdomains linked to your target, automatically chaining the attack surface directly into the scanner.
@@ -105,7 +111,7 @@ python tracehop.py example.com --pentest
 ```
 
 #### 3. Custom Rule Injection (YAML)
-Provide your own signatures in a Yumi-compatible format:
+Provide your own signatures in a Tracehop-compatible format:
 ```bash
 python tracehop.py example.com --rules my_custom_rules.yml
 ```

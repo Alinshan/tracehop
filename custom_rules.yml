@@ -1,0 +1,13 @@
+# Tracehop Custom Rules Example (YAML)
+# You can use two formats:
+
+# Format A: Simple Dictionary (Name: Regex)
+Internal Token: "INT-[a-zA-Z0-9]{12}"
+SuperSecret: "SECRET_[0-9]{8}"
+
+# Format B: Structured List (Tracehop/Nuclei style)
+- id: "NextJS-Build-ID"
+  regex: "buildId\":\"[a-zA-Z0-9]{10,}\""
+
+- name: "Internal-S3-Bucket"
+  regex: "[a-z0-9\.\-]+\.s3\.amazonaws\.com"

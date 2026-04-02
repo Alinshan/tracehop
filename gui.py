@@ -31,7 +31,7 @@ class WatermarkPlainTextEdit(QtWidgets.QPlainTextEdit):
         super().paintEvent(event)
 
 class ScanWorker(QtCore.QObject):
-    finished = QtCore.Signal(list, str)
+    finished = QtCore.Signal(list, dict, str) # results, recon_data, report_path
     progress = QtCore.Signal(str)
     
     def __init__(self, target, threads, rules_path=None, ua_path=None, pentest=False):
@@ -56,29 +56,29 @@ class ScanWorker(QtCore.QObject):
         try:
             if self.pentest:
                 self.progress.emit("Starting Advanced Pentest Suite...")
-                p_engine = PentestEngine(self.target)
-                # Overwrite internal engine config
-                p_engine.main_engine.compiled_rules = p_engine.main_engine.compiled_rules # Already handled by engine
-                p_engine.main_engine.user_agents = user_agents
-                # We need to pass custom_rules_path to the internal engine if provided
-                if self.rules_path:
-                    from scanner.rules import get_compiled_rules
-                    p_engine.main_engine.compiled_rules = get_compiled_rules(self.rules_path)
+                p_engine = PentestEngine(self.target, custom_rules_path=self.rules_path, user_agents=user_agents)
                 
                 vulns, report_path = self.loop.run_until_complete(p_engine.execute_suite(progress_callback=self.progress.emit))
                 results = p_engine.main_engine.results
-                self.finished.emit(results, report_path)
+                recon_data = p_engine.main_engine.recon_data
+                self.finished.emit(results, recon_data, report_path)
             else:
-                self.progress.emit(f"Initializing standard scan on {self.target}...")
+                self.progress.emit(f"Initializing Phase 0: Technical Intelligence on {self.target}...")
                 engine = TracehopEngine(self.target, semaphore_limit=self.threads, 
                                         custom_rules_path=self.rules_path, 
                                         user_agents=user_agents)
+                
+                # Phase 0
+                self.loop.run_until_complete(engine.run_reconnaissance())
+                
+                # Phase 1+
+                self.progress.emit("Proceeding to Phase 1: JS Recon & Secret Scanning...")
                 results = self.loop.run_until_complete(engine.run(enumerate_subdomains=True, 
                                                                progress_callback=self.progress.emit))
-                self.finished.emit(results, "")
+                self.finished.emit(results, engine.recon_data, "")
         except Exception as e:
             self.progress.emit(f"Error: {str(e)}")
-            self.finished.emit([], "")
+            self.finished.emit([], {}, "")
 
 class TracehopGUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -106,13 +106,13 @@ class TracehopGUI(QtWidgets.QMainWindow):
 -(((---(((--------
         """
         cat_label = QtWidgets.QLabel(cat_ascii)
-        cat_label.setStyleSheet("color: #2ecc71; font-family: 'Consolas', 'Courier New'; font-size: 10px; margin-bottom: -10px;")
+        cat_label.setStyleSheet("color: #00c853; font-family: 'Consolas', 'Courier New'; font-size: 10px; margin-bottom: -10px;")
         cat_label.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(cat_label)
 
         # Sidebar Header
         header = QtWidgets.QLabel("TRACEHOP")
-        header.setStyleSheet("color: #2ecc71; font-weight: bold; font-size: 24px; margin-bottom: 30px;")
+        header.setStyleSheet("color: #00c853; font-weight: bold; font-size: 24px; margin-bottom: 30px;")
         header.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(header)
 
@@ -153,17 +153,18 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.start_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.start_btn.setStyleSheet("""
             QPushButton {
-                background-color: #27ae60;
-                color: white;
+                background-color: #00c853;
+                color: #081a12;
                 font-weight: bold;
                 font-size: 14px;
-                border-radius: 5px;
+                border-radius: 4px;
+                border: 1px solid #00e676;
             }
             QPushButton:hover {
-                background-color: #2ecc71;
+                background-color: #00e676;
             }
             QPushButton:pressed {
-                background-color: #1e8449;
+                background-color: #00893b;
             }
         """)
         self.start_btn.clicked.connect(self.start_scan)
@@ -173,14 +174,14 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.progress_bar = QtWidgets.QProgressBar()
         self.progress_bar.setStyleSheet("""
             QProgressBar {
-                border: 1px solid #333;
-                border-radius: 5px;
+                border: 1px solid #2a2a2a;
+                border-radius: 4px;
                 text-align: center;
-                background-color: #1e1e1e;
+                background-color: #121212;
                 color: white;
             }
             QProgressBar::chunk {
-                background-color: #27ae60;
+                background-color: #00c853;
                 width: 20px;
             }
         """)
@@ -196,7 +197,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         dev_layout = QtWidgets.QVBoxLayout(dev_info)
         
         dev_label = QtWidgets.QLabel("<b>👨‍💻 Developer - Alinshan</b>")
-        dev_label.setStyleSheet("color: #2ecc71; font-size: 13px;")
+        dev_label.setStyleSheet("color: #00c853; font-size: 13px;")
         dev_layout.addWidget(dev_label)
 
         gh_label = QtWidgets.QLabel('<a href="https://github.com/Alinshan/tracehop" style="color: #7f8c8d; text-decoration: none;">🔗 GitHub - Tracehop</a>')
@@ -219,9 +220,9 @@ class TracehopGUI(QtWidgets.QMainWindow):
         # Tabs for Results and Logs
         self.tabs = QtWidgets.QTabWidget()
         self.tabs.setStyleSheet("""
-            QTabWidget::pane { border: 1px solid #333; background: #1e1e1e; }
-            QTabBar::tab { background: #333; color: #888; padding: 10px 20px; border-top-left-radius: 4px; border-top-right-radius: 4px; }
-            QTabBar::tab:selected { background: #1e1e1e; color: #2ecc71; border-bottom: 2px solid #2ecc71; }
+            QTabWidget::pane { border: 1px solid #2a2a2a; background: #121212; }
+            QTabBar::tab { background: #1e1e1e; color: #777; padding: 12px 25px; border: 1px solid #2a2a2a; border-bottom: none; margin-right: 2px; }
+            QTabBar::tab:selected { background: #121212; color: #00c853; border-top: 3px solid #00c853; }
         """)
         content_layout.addWidget(self.tabs)
 
@@ -236,12 +237,25 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.verticalHeader().setVisible(False)
         self.table.setStyleSheet("""
-            QTableWidget { background-color: #1e1e1e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma; gridline-color: transparent; border: none; }
-            QTableWidget::item { padding: 10px; }
-            QHeaderView::section { background-color: #252525; color: #2ecc71; padding: 10px; font-weight: bold; border: none; border-bottom: 1px solid #333; }
+            QTableWidget { background-color: #121212; color: #e0e0e0; font-family: 'Consolas', 'Segoe UI'; gridline-color: transparent; border: none; outline: none; }
+            QTableWidget::item { padding: 12px; border-bottom: 1px solid #1a1a1a; }
+            QHeaderView::section { background-color: #1a1a1a; color: #00c853; padding: 12px; font-weight: bold; border: none; border-bottom: 2px solid #00c853; }
         """)
         self.res_layout.addWidget(self.table)
         self.tabs.addTab(results_widget, "🎯 Findings")
+
+        # --- Tab 2: Technical Intelligence (New) ---
+        recon_widget = QtWidgets.QWidget()
+        self.recon_layout = QtWidgets.QVBoxLayout(recon_widget)
+        self.recon_tree = QtWidgets.QTreeWidget()
+        self.recon_tree.setHeaderLabels(["Category", "Details"])
+        self.recon_tree.setColumnWidth(0, 200)
+        self.recon_tree.setStyleSheet("""
+            QTreeWidget { background-color: #121212; color: #e0e0e0; font-family: 'Consolas', 'Segoe UI'; border: none; }
+            QHeaderView::section { background-color: #1a1a1a; color: #00c853; padding: 10px; font-weight: bold; border-bottom: 2px solid #00c853; }
+        """)
+        self.recon_layout.addWidget(self.recon_tree)
+        self.tabs.addTab(recon_widget, "🔍 Intelligence")
 
         # Log Tab
         log_container = QtWidgets.QWidget()
@@ -290,7 +304,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
         palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
         palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-        palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(46, 204, 113))
+        palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(0, 200, 83))
         palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
         self.setPalette(palette)
 
@@ -330,7 +344,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.worker.progress.connect(self.log)
         self.thread.start()
 
-    def on_scan_finished(self, results, report_path):
+    def on_scan_finished(self, results, recon_data, report_path):
         self.start_btn.setEnabled(True)
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(100)
@@ -338,24 +352,64 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.thread.wait()
         
         self.log(f"Scan complete! Found {len(results)} secrets.")
+        if recon_data:
+            self.log("Technical Intelligence gathered (DNS, SSL, Tech).")
+
         if report_path:
             self.log(f"Pentest report generated: {report_path}")
             QtWidgets.QMessageBox.information(self, "Success", f"Pentest complete. Report at:\n{report_path}")
 
-        self.tabs.setCurrentIndex(0) # Switch back to findings
+        # Update Findings Table
+        self.tabs.setCurrentIndex(0) 
         self.table.setRowCount(len(results))
         for i, res in enumerate(results):
-            # Rule Name
             self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(res['rule']))
-            # Source
             self.table.setItem(i, 2, QtWidgets.QTableWidgetItem(res['source']))
-            # Context
             self.table.setItem(i, 3, QtWidgets.QTableWidgetItem(res['context']))
-            # Dummy Severity (Tracehop core rules don't fixed severities yet, but we can guess)
             sev = "MEDIUM"
             if any(x in res['rule'].lower() for x in ['key', 'secret', 'token', 'private']):
                sev = "HIGH"
             self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(sev))
+
+        # Update Intelligence Tree
+        self.recon_tree.clear()
+        if recon_data:
+            # DNS
+            if recon_data.get("dns"):
+                dns_root = QtWidgets.QTreeWidgetItem(self.recon_tree, ["DNS Records", ""])
+                for rtype, vals in recon_data["dns"].items():
+                    QtWidgets.QTreeWidgetItem(dns_root, [rtype, ", ".join(vals)])
+                dns_root.setExpanded(True)
+
+            # SSL
+            if recon_data.get("ssl"):
+                ssl_root = QtWidgets.QTreeWidgetItem(self.recon_tree, ["SSL Certificate", ""])
+                for k, v in recon_data["ssl"].items():
+                    QtWidgets.QTreeWidgetItem(ssl_root, [k.capitalize(), str(v)])
+                ssl_root.setExpanded(True)
+
+            # Tech
+            if recon_data.get("tech_stack"):
+                tech_root = QtWidgets.QTreeWidgetItem(self.recon_tree, ["Technology Stack", ""])
+                for tech in recon_data["tech_stack"]:
+                    QtWidgets.QTreeWidgetItem(tech_root, ["Tech", tech])
+                tech_root.setExpanded(True)
+
+            # GeoIP
+            if recon_data.get("geoip"):
+                geo = recon_data["geoip"]
+                geo_root = QtWidgets.QTreeWidgetItem(self.recon_tree, ["Geo-Location", ""])
+                QtWidgets.QTreeWidgetItem(geo_root, ["IP Address", geo.get("ip")])
+                QtWidgets.QTreeWidgetItem(geo_root, ["Location", f"{geo.get('city')}, {geo.get('country')}"])
+                QtWidgets.QTreeWidgetItem(geo_root, ["ISP", geo.get("isp")])
+                QtWidgets.QTreeWidgetItem(geo_root, ["AS", geo.get("as")])
+                geo_root.setExpanded(True)
+
+            # Ports
+            if recon_data.get("ports"):
+                ports_root = QtWidgets.QTreeWidgetItem(self.recon_tree, ["Open Ports", ""])
+                QtWidgets.QTreeWidgetItem(ports_root, ["Ports", ", ".join(map(str, recon_data["ports"]))])
+                ports_root.setExpanded(True)
 
 def run_gui():
     app = QtWidgets.QApplication(sys.argv)

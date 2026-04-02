@@ -24,12 +24,12 @@ def print_banner():
  | |_| | | (_| | (__|  __/ | | | (_) | |_) |
   \__|_|  \__,_|\___\___|_| |_|\___/| .__/ 
                                     |_|    
-    [bold bright_green]> SYSTEM COMPROMISED[/]
+    [bold green]> SYSTEM SECURED[/]
     [bold green]> INITIATING JS RECON & SECRET SCANNER...[/]
     [dim green]> DEVELOPER - ALINSHAN[/]
     [dim green]> GITHUB - https://github.com/Alinshan/tracehop[/]
     """
-    console.print(Panel(banner, border_style="green", expand=False))
+    console.print(Panel(banner, border_style="spring_green3", expand=False))
 
 async def main():
     parser = argparse.ArgumentParser(description="Tracehop - Premium JS Recon & Secret Scanner")
@@ -75,9 +75,9 @@ async def main():
         engine = TracehopEngine(target_url, custom_rules_path=args.rules, user_agents=user_agents)
     
     with Progress(
-        SpinnerColumn(style="bold bright_green"),
-        TextColumn("[bold bright_green]{task.description}"),
-        BarColumn(complete_style="bright_green", finished_style="green"),
+        SpinnerColumn(style="bold spring_green3"),
+        TextColumn("[bold spring_green3]{task.description}"),
+        BarColumn(complete_style="spring_green3", finished_style="green"),
         TimeElapsedColumn(),
         transient=True,
     ) as progress:
@@ -87,34 +87,42 @@ async def main():
             progress.update(task, description=f"[bold green]> {msg}[/]")
 
         if args.pentest:
-            results, report_path = await engine.execute_suite(progress_callback=update_progress)
+            vulnerabilities, report_path = await engine.execute_suite(progress_callback=update_progress)
+            results = engine.main_engine.results # Secrets found during reconnaissance
+            recon_data = engine.main_engine.recon_data
         else:
+            # Phase 0 for basic scan too
+            update_progress("COLLECTING TECHNICAL INTELLIGENCE...")
+            await engine.run_reconnaissance()
             results = await engine.run(enumerate_subdomains=enumerate_subdomains, progress_callback=update_progress)
-
-    if args.pentest:
-        console.print(f"\n[bold green]>[/] PENTEST SUITE COMPLETE. VULNERABILITIES FOUND: [bold red]{len(results)}[/]")
-        for vuln in results:
-            color = "red" if vuln['severity'] == "CRITICAL" else "yellow"
-            console.print(f"    [dim]-[/] [{color}][{vuln['severity']}][/] {vuln['type']} -> {vuln['host']}")
-        
-        console.print(f"\n[bold green]>[/] FULL REPORT GENERATED: [underline bright_green]{report_path}[/]")
-        return
+            vulnerabilities = []
+            report_path = ""
+            recon_data = engine.recon_data
 
     if isinstance(results, dict) and "error" in results:
         console.print(f"[bold red]Error:[/] {results['error']}")
         return
 
-    # Print Summary Panel
-    summary_text = (
-        f"TARGET: [bold bright_green]{engine.domain}[/]\n"
-        f"NODES SCANNED: [dim green]{len(engine.targets)}[/]\n"
-        f"CRITICAL FINDINGS: [bold bright_green]{len(results)}[/]"
-    )
-    console.print(Panel(summary_text, title="[blink]>> OPERATION REPORT <<[/]", border_style="green", expand=False))
+    # --- CLI Report Section ---
+    if args.pentest:
+        console.print(f"\n[bold green]>[/] PENTEST SUITE COMPLETE. VULNERABILITIES FOUND: [bold red]{len(vulnerabilities)}[/]")
+        for vuln in vulnerabilities:
+            color = "red" if vuln['severity'] == "CRITICAL" else "yellow"
+            console.print(f"    [dim]-[/] [{color}][{vuln['severity']}][/] {vuln['type']} -> {vuln['host']}")
+        
+        console.print(f"\n[bold green]>[/] AUDIT REPORT EXPORTED: [underline spring_green3]{report_path}[/]")
 
-    # Print Findings Table
+    # Print Summary Panel (Unified)
+    summary_text = (
+        f"TARGET: [bold spring_green3]{engine.domain if not args.pentest else engine.main_engine.domain}[/]\n"
+        f"NODES SCANNED: [dim green]{len(engine.targets if not args.pentest else engine.main_engine.targets)}[/]\n"
+        f"CRITICAL FINDINGS: [bold red]{len(results)}[/]"
+    )
+    console.print(Panel(summary_text, title="> OPERATION REPORT <", border_style="spring_green3", expand=False))
+
+    # Print Findings Table (Secrets)
     if results:
-        table = Table(title="[blink bright_green]** COMPROMISED SECRETS DETECTED **[/]", show_header=True, header_style="bold black on green", border_style="green")
+        table = Table(title="[bold spring_green3]COMPROMISED SECRETS DETECTED[/]", show_header=True, header_style="bold black on spring_green3", border_style="spring_green3")
         table.add_column("SIGNATURE", style="bold green")
         table.add_column("PAYLOAD SNIPPET", style="bright_green")
         table.add_column("SOURCE NODE", style="dim green")
@@ -135,37 +143,51 @@ async def main():
     else:
         console.print("\n[dim green]>[/] [bold green]SYSTEM SECURE. NO VULNERABILITIES DETECTED.[/]")
 
-    if engine.endpoints:
-        console.print(f"\n[bold yellow]>[/] [bold yellow]DISCOVERED {len(engine.endpoints)} API ENDPOINTS/ROUTES:[/]")
-        for ep in sorted(list(engine.endpoints))[:15]: # Show max 15 on console
+    # --- Phase 0 Summary ---
+    if recon_data.get("tech_stack") or recon_data.get("ports"):
+        tech_str = ", ".join(recon_data["tech_stack"][:5])
+        ports_str = ", ".join(map(str, recon_data["ports"][:10]))
+        console.print(f"\n[bold spring_green3]>[/] [bold white]TECH STACK:[/] [dim]{tech_str}[/]")
+        console.print(f"[bold spring_green3]>[/] [bold white]OPEN PORTS:[/] [dim]{ports_str}[/]")
+
+    endpoints = getattr(engine, 'endpoints', []) if not args.pentest else engine.main_engine.endpoints
+    if endpoints:
+        console.print(f"\n[bold yellow]>[/] [bold yellow]DISCOVERED {len(endpoints)} API ENDPOINTS/ROUTES:[/]")
+        for ep in sorted(list(endpoints))[:15]: # Show max 15 on console
             console.print(f"    [dim]-[/] [bright_yellow]{ep}[/]")
-        if len(engine.endpoints) > 15:
-            console.print(f"    [dim]... and {len(engine.endpoints) - 15} more (see JSON)[/]")
+        if len(endpoints) > 15:
+            console.print(f"    [dim]... and {len(endpoints) - 15} more (see JSON)[/]")
 
     # Automatic JSON Output — saved to reports/ folder
     reports_dir = Path("reports")
     reports_dir.mkdir(exist_ok=True)
 
-    domain_clean = engine.domain.replace(".", "_")
+    domain_clean = (engine.domain if not args.pentest else engine.main_engine.domain).replace(".", "_")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_filename = args.output or f"tracehop_{domain_clean}_{timestamp}.json"
     output_file = reports_dir / output_filename
     
+    # Extract data correctly from either engine type
+    targets = getattr(engine, 'targets', []) if not args.pentest else engine.main_engine.targets
+    endpoints = getattr(engine, 'endpoints', []) if not args.pentest else engine.main_engine.endpoints
+
     report_data = {
-        "target": engine.domain,
+        "target": engine.domain if not args.pentest else engine.main_engine.domain,
         "timestamp": timestamp,
-        "subdomains_found": getattr(engine, 'targets', []),
-        "historical_js_found": getattr(engine, 'historical_urls', []),
-        "endpoints_count": len(getattr(engine, 'endpoints', [])),
-        "endpoints": sorted(list(getattr(engine, 'endpoints', []))),
+        "subdomains_found": targets,
+        "historical_js_found": getattr(engine, 'historical_urls', []) if not args.pentest else engine.main_engine.historical_urls,
+        "endpoints_count": len(endpoints),
+        "endpoints": sorted(list(endpoints)),
         "findings_count": len(results),
-        "findings": results
+        "findings": results,
+        "vulnerabilities": vulnerabilities if args.pentest else [],
+        "technical_intelligence": recon_data
     }
     
     with open(output_file, 'w') as f:
         json.dump(report_data, f, indent=4)
     
-    console.print(f"\n[bold green]>[/] JSON DATA EXFILTRATED TO: [underline bright_green]{output_file}[/]")
+    console.print(f"\n[bold green]>[/] DATA EXFILTRATED TO: [underline spring_green3]{output_file}[/]")
 
 def cli():
     try:

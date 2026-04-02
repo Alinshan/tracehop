@@ -1,10 +1,14 @@
 import asyncio
 import httpx
 import re
+import socket
+import ssl
+import dns.resolver
+import whois
+import random
+import jsbeautifier
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-import jsbeautifier
-import random
 from .rules import get_compiled_rules, is_likely_dummy
 
 # Regex to extract JS file references from webpack chunks, source maps, etc.
@@ -24,6 +28,163 @@ class TracehopEngine:
         self.endpoints = set()
         self._seen_findings = set()   # deduplicate findings
         self.user_agents = user_agents or []
+        self.recon_data = {
+            "dns": {},
+            "ssl": {},
+            "whois": {},
+            "tech_stack": [],
+            "ports": []
+        }
+
+    # ─────────────────────────────────────────
+    #  DEEP RECONNAISSANCE (Phase 0)
+    # ─────────────────────────────────────────
+
+    async def run_reconnaissance(self):
+        """Orchestrate all Phase 0 recon modules."""
+        tasks = [
+            self.resolve_dns(),
+            self.fetch_ssl_info(),
+            self.fetch_whois_info(),
+            self.detect_tech_stack(),
+            self.scan_ports()
+        ]
+        await asyncio.gather(*tasks)
+
+    async def resolve_dns(self):
+        """Resolve A, MX, NS, and TXT records."""
+        try:
+            resolver = dns.resolver.Resolver()
+            resolver.timeout = 5.0
+            resolver.lifetime = 5.0
+            
+            for rtype in ['A', 'MX', 'NS', 'TXT']:
+                try:
+                    answers = resolver.resolve(self.domain, rtype)
+                    self.recon_data["dns"][rtype] = [str(r) for r in answers]
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    async def fetch_ssl_info(self):
+        """Extract SSL/TLS certificate details."""
+        try:
+            ctx = ssl.create_default_context()
+            with socket.create_connection((self.domain, 443), timeout=5.0) as sock:
+                with ctx.wrap_socket(sock, server_hostname=self.domain) as ssock:
+                    cert = ssock.getpeercert()
+                    if cert:
+                        self.recon_data["ssl"] = {
+                            "issuer": dict(x[0] for x in cert.get('issuer', [])).get('commonName'),
+                            "expiry": cert.get('notAfter'),
+                            "subject": dict(x[0] for x in cert.get('subject', [])).get('commonName'),
+                            "version": cert.get('version')
+                        }
+        except Exception:
+            pass
+
+    async def fetch_whois_info(self):
+        """Fetch WHOIS registration details."""
+        try:
+            # whois.whois is a blocking call, run in thread
+            loop = asyncio.get_event_loop()
+            w = await loop.run_in_executor(None, whois.whois, self.domain)
+            if w:
+                self.recon_data["whois"] = {
+                    "registrar": w.registrar,
+                    "creation_date": str(w.creation_date[0] if isinstance(w.creation_date, list) else w.creation_date),
+                    "expiry_date": str(w.expiration_date[0] if isinstance(w.expiration_date, list) else w.expiration_date),
+                    "org": w.org
+                }
+        except Exception:
+            pass
+
+    async def detect_tech_stack(self):
+        """Fingerprint technologies using headers and HTML markers with expanded signatures."""
+        try:
+            async with httpx.AsyncClient(timeout=10.0, verify=False) as client:
+                r = await client.get(self.target_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Tracehop/3.0"})
+                headers = {k.lower(): v for k, v in r.headers.items()}
+                text = r.text.lower()
+                
+                techs = set()
+                # ── Infrastructure & WAF ──
+                if "server" in headers: techs.add(f"Server: {headers['server']}")
+                if "via" in headers: techs.add(f"Via: {headers['via']}")
+                if "cf-ray" in headers: techs.add("Cloudflare WAF")
+                if "x-amz-cf-id" in headers: techs.add("AWS CloudFront")
+                if "x-akamai-transformed" in headers: techs.add("Akamai CDN")
+                if "x-envoy-upstream-service-time" in headers: techs.add("Envoy Proxy")
+                if "x-litespeed-cache" in headers: techs.add("LiteSpeed")
+                
+                # ── Frameworks & Libraries ──
+                if "x-powered-by" in headers: techs.add(f"Powered-By: {headers['x-powered-by']}")
+                if "x-nextjs-cache" in headers or "_next" in text: techs.add("Next.js")
+                if "wp-content" in text: techs.add("WordPress")
+                if "react" in text: techs.add("React")
+                if "vue" in text: techs.add("Vue.js")
+                if "angular" in text: techs.add("Angular")
+                if "jquery" in text: techs.add("jQuery")
+                if "drupal" in text: techs.add("Drupal")
+                if "joomla" in text: techs.add("Joomla")
+                if "ghost" in text: techs.add("Ghost CMS")
+                
+                # ── Analytics & Security ──
+                if "google-analytics" in text: techs.add("Google Analytics")
+                if "googletagmanager" in text: techs.add("Google Tag Manager")
+                if "content-security-policy" in headers: techs.add("CSP Enabled")
+                if "strict-transport-security" in headers: techs.add("HSTS Enabled")
+                
+                self.recon_data["tech_stack"] = sorted(list(techs))
+                
+                # Geolocation Lookup
+                await self.fetch_geoip()
+        except Exception:
+            pass
+
+    async def fetch_geoip(self):
+        """Map the primary A-record to GeoLocation and ISP details."""
+        try:
+            a_records = self.recon_data["dns"].get("A", [])
+            if not a_records:
+                # Try simple resolution if A records weren't fetched
+                ip = socket.gethostbyname(self.domain)
+            else:
+                ip = a_records[0]
+
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                r = await client.get(f"http://ip-api.com/json/{ip}")
+                if r.status_code == 200:
+                    data = r.json()
+                    if data.get("status") == "success":
+                        self.recon_data["geoip"] = {
+                            "ip": ip,
+                            "country": data.get("country"),
+                            "region": data.get("regionName"),
+                            "city": data.get("city"),
+                            "isp": data.get("isp"),
+                            "as": data.get("as")
+                        }
+        except Exception:
+            pass
+
+    async def scan_ports(self):
+        """Fast async scan for top 20 common ports."""
+        top_ports = [21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 445, 993, 
+                     995, 1723, 3306, 3389, 5900, 8080]
+        
+        async def check_port(port):
+            try:
+                conn = asyncio.open_connection(self.domain, port)
+                _, writer = await asyncio.wait_for(conn, timeout=2.0)
+                self.recon_data["ports"].append(port)
+                writer.close()
+                await writer.wait_closed()
+            except Exception:
+                pass
+
+        await asyncio.gather(*(check_port(p) for p in top_ports))
 
     # ─────────────────────────────────────────
     #  SUBDOMAIN DISCOVERY
