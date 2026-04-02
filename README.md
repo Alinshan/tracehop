@@ -119,7 +119,7 @@ python tracehop.py filter.com --user-agents uas.txt
 #### 3. Output Management
 Target specific filenames for your auto-generated JSON reports.
 ```bash
-python tracehop.py hackerone.com --subdomains --output h1_recon_report.json
+python tracehop.py example.com --subdomains --output recon_report.json
 ```
 
 #### 4. Stealth / Minimal Output
