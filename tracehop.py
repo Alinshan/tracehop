@@ -24,12 +24,12 @@ def print_banner():
  | |_| | | (_| | (__|  __/ | | | (_) | |_) |
   \__|_|  \__,_|\___\___|_| |_|\___/| .__/ 
                                     |_|    
-    [bold green]> SYSTEM SECURED[/]
-    [bold green]> INITIATING JS RECON & SECRET SCANNER...[/]
-    [dim green]> DEVELOPER - ALINSHAN[/]
-    [dim green]> GITHUB - https://github.com/Alinshan/tracehop[/]
+    [bold blue]> SYSTEM SECURED[/]
+    [bold blue]> INITIATING JS RECON & SECRET SCANNER...[/]
+    [dim blue]> DEVELOPER - ALINSHAN[/]
+    [dim blue]> GITHUB - https://github.com/Alinshan/tracehop[/]
     """
-    console.print(Panel(banner, border_style="spring_green3", expand=False))
+    console.print(Panel(banner, border_style="dodger_blue1", expand=False))
 
 async def main():
     parser = argparse.ArgumentParser(description="Tracehop - Premium JS Recon & Secret Scanner")
@@ -75,9 +75,9 @@ async def main():
         engine = TracehopEngine(target_url, custom_rules_path=args.rules, user_agents=user_agents)
     
     with Progress(
-        SpinnerColumn(style="bold spring_green3"),
-        TextColumn("[bold spring_green3]{task.description}"),
-        BarColumn(complete_style="spring_green3", finished_style="green"),
+        SpinnerColumn(style="bold dodger_blue1"),
+        TextColumn("[bold dodger_blue1]{task.description}"),
+        BarColumn(complete_style="dodger_blue1", finished_style="green"),
         TimeElapsedColumn(),
         transient=True,
     ) as progress:
@@ -110,19 +110,19 @@ async def main():
             color = "red" if vuln['severity'] == "CRITICAL" else "yellow"
             console.print(f"    [dim]-[/] [{color}][{vuln['severity']}][/] {vuln['type']} -> {vuln['host']}")
         
-        console.print(f"\n[bold green]>[/] AUDIT REPORT EXPORTED: [underline spring_green3]{report_path}[/]")
+        console.print(f"\n[bold green]>[/] AUDIT REPORT EXPORTED: [underline dodger_blue1]{report_path}[/]")
 
     # Print Summary Panel (Unified)
     summary_text = (
-        f"TARGET: [bold spring_green3]{engine.domain if not args.pentest else engine.main_engine.domain}[/]\n"
+        f"TARGET: [bold dodger_blue1]{engine.domain if not args.pentest else engine.main_engine.domain}[/]\n"
         f"NODES SCANNED: [dim green]{len(engine.targets if not args.pentest else engine.main_engine.targets)}[/]\n"
         f"CRITICAL FINDINGS: [bold red]{len(results)}[/]"
     )
-    console.print(Panel(summary_text, title="> OPERATION REPORT <", border_style="spring_green3", expand=False))
+    console.print(Panel(summary_text, title="> OPERATION REPORT <", border_style="dodger_blue1", expand=False))
 
     # Print Findings Table (Secrets)
     if results:
-        table = Table(title="[bold spring_green3]COMPROMISED SECRETS DETECTED[/]", show_header=True, header_style="bold black on spring_green3", border_style="spring_green3")
+        table = Table(title="[bold dodger_blue1]COMPROMISED SECRETS DETECTED[/]", show_header=True, header_style="bold black on dodger_blue1", border_style="dodger_blue1")
         table.add_column("SIGNATURE", style="bold green")
         table.add_column("PAYLOAD SNIPPET", style="bright_green")
         table.add_column("SOURCE NODE", style="dim green")

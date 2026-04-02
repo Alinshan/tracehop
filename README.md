@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="assets/tracehop_banner.png" alt="Tracehop Banner" width="800">
+  <img src="assets/tracehop_phantom_cat_banner.png" alt="Tracehop Phantom Banner" width="800">
   <br>
   <h1>Tracēhop 🚀</h1>
   <p><b>Advanced JS Reconnaissance & Automated Pentest Orchestrator — v3.1 (Elite)</b></p>
 
-  [![Python 3.8+](https://img.shields.io/badge/python-3.8+-00c853.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
+  [![Python 3.8+](https://img.shields.io/badge/python-3.8+-00b0ff.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
   [![AsyncIO Powered](https://img.shields.io/badge/execution-AsyncIO-brightgreen.svg?style=for-the-badge)](https://docs.python.org/3/library/asyncio.html)
-  [![UI Theme](https://img.shields.io/badge/UI-Cyber_Emerald-00c853.svg?style=for-the-badge)](https://github.com/Alinshan/tracehop)
+  [![UI Theme](https://img.shields.io/badge/UI-Phantom_Blue-00b0ff.svg?style=for-the-badge)](https://github.com/Alinshan/tracehop)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)]()
 
   *An asynchronous, high-precision intelligence suite for modern web reconnaissance.*
@@ -30,7 +30,7 @@ With the **v3.1 (Elite)** update, Tracehop integrates a dedicated **Phase 0: Tec
 | **Subdomain Recon** | Passive enumeration via crt.sh & Certificate Transparency. | 🌐 |
 | **JS Secret Hunter** | 100+ patterns for Cloud, Payments, and DevOps tokens. | ⚡ |
 | **Pentest Orchestrator** | Automated IDOR probing and Source Map leak verification. | 🛡️ |
-| **Elite Dashboard** | High-fidelity PySide6 GUI with real-time logs and tree-views. | 🖥️ |
+| **Elite Dashboard** | High-fidelity PySide6 GUI with Phantom Blue aesthetics. | 🖥️ |
 
 <br>
 
@@ -42,10 +42,10 @@ graph LR
     B --> C[Phase 2: Vuln Verification]
     C --> D[Phase 3: Reporting]
     
-    style A fill:#121212,stroke:#00c853,stroke-width:2px,color:#fff
-    style B fill:#121212,stroke:#00c853,stroke-width:2px,color:#fff
-    style C fill:#121212,stroke:#00c853,stroke-width:2px,color:#fff
-    style D fill:#1b5e20,stroke:#00c853,stroke-width:4px,color:#fff
+    style A fill:#121212,stroke:#00b0ff,stroke-width:2px,color:#fff
+    style B fill:#121212,stroke:#00b0ff,stroke-width:2px,color:#fff
+    style C fill:#121212,stroke:#00b0ff,stroke-width:2px,color:#fff
+    style D fill:#0039cb,stroke:#00b0ff,stroke-width:4px,color:#fff
 ```
 
 ### 🛰️ Phase 0: Technical Intelligence
@@ -119,5 +119,5 @@ Tracehop generates audit-ready reports in both **JSON** and **Markdown** formats
   <h3>Legal Disclaimer</h3>
   <p><i>Tracehop is strictly for authorized security research, defensive auditing, and educational use. Unauthorized scanning of targets is strictly prohibited.</i></p>
   <br>
-  <b>© 2026 Alinshan — Cyber-Emerald Edition</b>
+  <b>© 2026 Alinshan — Phantom Edition</b>
 </div>

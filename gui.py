@@ -106,13 +106,13 @@ class TracehopGUI(QtWidgets.QMainWindow):
 -(((---(((--------
         """
         cat_label = QtWidgets.QLabel(cat_ascii)
-        cat_label.setStyleSheet("color: #00c853; font-family: 'Consolas', 'Courier New'; font-size: 10px; margin-bottom: -10px;")
+        cat_label.setStyleSheet("color: #00b0ff; font-family: 'Consolas', 'Courier New'; font-size: 10px; margin-bottom: -10px;")
         cat_label.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(cat_label)
 
         # Sidebar Header
         header = QtWidgets.QLabel("TRACEHOP")
-        header.setStyleSheet("color: #00c853; font-weight: bold; font-size: 24px; margin-bottom: 30px;")
+        header.setStyleSheet("color: #00b0ff; font-weight: bold; font-size: 24px; margin-bottom: 30px;")
         header.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(header)
 
@@ -153,7 +153,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.start_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.start_btn.setStyleSheet("""
             QPushButton {
-                background-color: #00c853;
+                background-color: #00b0ff;
                 color: #081a12;
                 font-weight: bold;
                 font-size: 14px;
@@ -181,7 +181,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
                 color: white;
             }
             QProgressBar::chunk {
-                background-color: #00c853;
+                background-color: #00b0ff;
                 width: 20px;
             }
         """)
@@ -197,7 +197,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         dev_layout = QtWidgets.QVBoxLayout(dev_info)
         
         dev_label = QtWidgets.QLabel("<b>👨‍💻 Developer - Alinshan</b>")
-        dev_label.setStyleSheet("color: #00c853; font-size: 13px;")
+        dev_label.setStyleSheet("color: #00b0ff; font-size: 13px;")
         dev_layout.addWidget(dev_label)
 
         gh_label = QtWidgets.QLabel('<a href="https://github.com/Alinshan/tracehop" style="color: #7f8c8d; text-decoration: none;">🔗 GitHub - Tracehop</a>')
@@ -222,7 +222,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.tabs.setStyleSheet("""
             QTabWidget::pane { border: 1px solid #2a2a2a; background: #121212; }
             QTabBar::tab { background: #1e1e1e; color: #777; padding: 12px 25px; border: 1px solid #2a2a2a; border-bottom: none; margin-right: 2px; }
-            QTabBar::tab:selected { background: #121212; color: #00c853; border-top: 3px solid #00c853; }
+            QTabBar::tab:selected { background: #121212; color: #00b0ff; border-top: 3px solid #00b0ff; }
         """)
         content_layout.addWidget(self.tabs)
 
@@ -239,7 +239,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.table.setStyleSheet("""
             QTableWidget { background-color: #121212; color: #e0e0e0; font-family: 'Consolas', 'Segoe UI'; gridline-color: transparent; border: none; outline: none; }
             QTableWidget::item { padding: 12px; border-bottom: 1px solid #1a1a1a; }
-            QHeaderView::section { background-color: #1a1a1a; color: #00c853; padding: 12px; font-weight: bold; border: none; border-bottom: 2px solid #00c853; }
+            QHeaderView::section { background-color: #1a1a1a; color: #00b0ff; padding: 12px; font-weight: bold; border: none; border-bottom: 2px solid #00b0ff; }
         """)
         self.res_layout.addWidget(self.table)
         self.tabs.addTab(results_widget, "🎯 Findings")
@@ -252,7 +252,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         self.recon_tree.setColumnWidth(0, 200)
         self.recon_tree.setStyleSheet("""
             QTreeWidget { background-color: #121212; color: #e0e0e0; font-family: 'Consolas', 'Segoe UI'; border: none; }
-            QHeaderView::section { background-color: #1a1a1a; color: #00c853; padding: 10px; font-weight: bold; border-bottom: 2px solid #00c853; }
+            QHeaderView::section { background-color: #1a1a1a; color: #00b0ff; padding: 10px; font-weight: bold; border-bottom: 2px solid #00b0ff; }
         """)
         self.recon_layout.addWidget(self.recon_tree)
         self.tabs.addTab(recon_widget, "🔍 Intelligence")
