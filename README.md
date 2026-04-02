@@ -1,96 +1,151 @@
-# Tracehop: Premium JS Recon & Secret Scanner
+<div align="center">
 
-![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
-![AsyncIO](https://img.shields.io/badge/execution-async-brightgreen)
-![Rich UI](https://img.shields.io/badge/ui-rich-magenta)
+# Tracēhop 🚀
+**Premium JS Reconnaissance & Secret Scanning Engine — v2.0 (Pro)**
 
-**Tracehop** is a high-performance JavaScript reconnaissance engine designed for security researchers and bug hunters. It automates the process of discovery and secret extraction from web applications by concurrently scanning script files and inline code for hardcoded credentials, API keys, and sensitive tokens.
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
+[![AsyncIO Powered](https://img.shields.io/badge/execution-AsyncIO-brightgreen.svg?style=for-the-badge)](https://docs.python.org/3/library/asyncio.html)
+[![Terminal UI](https://img.shields.io/badge/UI-Rich-magenta.svg?style=for-the-badge)](https://github.com/Textualize/rich)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)]()
 
----
-
-## ✨ Features
-
-- 🚀 **Asynchronous Scanner**: Powered by `httpx` and `asyncio` for blindingly fast concurrent request handling.
-- 💎 **Premium Console UI**: A high-fidelity interface using the `rich` library, featuring real-time spinners, color-coded tables, and clean status updates.
-- 🕵️ **Deep Intelligence**:
-    - Scans both external JS files (`<script src="...">`) and inline scripts.
-    - Automatically handles URL joining and de-duplication.
-    - Intelligent JS beautification for minified files to improve detection accuracy.
-- 🔍 **Comprehensive Ruleset**: Robust regex patterns for detecting:
-    - **Cloud Providers**: AWS, Google Cloud, Firebase.
-    - **Payment Gateways**: Stripe (Live/Test).
-    - **Communication**: Slack, Twilio, Mailchimp.
-    - **Platforms**: GitHub Tokens, Heroku API Keys.
-    - **Generic Secrets**: Identifies standard `api_key` and `auth_token` patterns.
-- 📊 **Automatic Reporting**: Generates timestamped JSON reports after every scan for easy auditing and integration.
+*Engineered by **Alinshan** for security researchers, bug bounty hunters, and elite penetrations testers.*
 
 ---
 
-## 🏗️ Architecture
+</div>
 
-Tracehop is built with a modular asynchronous architecture that maximizes efficiency:
+<br>
 
-1. **Orchestrator (`tracehop.py`)**: Manages CLI arguments, UI rendering, and the main event loop.
-2. **Scanning Engine (`scanner/engine.py`)**:
-   - **Phase 1: Discovery**: Fetches the landing page and extracts all script sources.
-   - **Phase 2: Extraction**: Isolates inline JS content and resolves remote absolute URLs.
-   - **Phase 3: High-Concurrency Scan**: Uses a Semaphore-controlled async pool to fetch and scan dozens of JS files in parallel.
-3. **Detection Core**: Executes a pre-compiled dictionary of regex rules (`scanner/rules.py`) against beautified JS content.
-4. **Reporter**: Aggregates findings and performs automatic JSON serialization.
+**Tracehop** is an asynchronous, high-performance web reconnaissance tool. It completely automates the extraction and deep-scanning of JavaScript files and inline scripts across modern web applications to identify exposed secrets, hardcoded credentials, and critical API integrations.
 
----
+With the release of **v2.0 (Pro)**, Tracehop now supports lightning-fast **passive subdomain enumeration** and boasts a comprehensive detection engine of **over 50 complex regex signatures**.
 
-## 🛠️ Installation
+<br>
+
+## ✨ Core Features
+
+<details open>
+<summary><b>🔥 High-Performance Asynchronous Engine</b></summary>
+<br>
+Powered by `httpx` and `asyncio`, Tracehop makes blindingly fast concurrent requests, allowing it to scan entire domains and hundreds of scripts in seconds without blocking.
+</details>
+
+<details open>
+<summary><b>🌐 Subdomain Discovery (New in v2.0)</b></summary>
+<br>
+Passively query the `crt.sh` Certificate Transparency logs to discover all active subdomains linked to your target, automatically chaining the attack surface directly into the scanner.
+</details>
+
+<details open>
+<summary><b>🧠 Deep JS Intelligence & Beautification</b></summary>
+<br>
+Automatically fetches both remote scripts (`<script src="...">`) and inline JavaScript. Utilizing heuristic-based pre-processing, Tracehop detects and natively beautifies minified (uglified) scripts prior to regex matching to guarantee high-fidelity detection and minimum false positives.
+</details>
+
+<details open>
+<summary><b>💎 Premium Terminal Experience</b></summary>
+<br>
+Built on top of the `rich` library. Enjoy dynamic spinners, live elapsed time tracking, color-coded findings matrices, and summarized scanning contexts straight in your terminal. No more cluttered CLI outputs.
+</details>
+
+<details open>
+<summary><b>📊 Automated JSON Telemetry</b></summary>
+<br>
+Security scans mean nothing without data. Tracehop automatically compiles and ejects structured, timestamped JSON reports detailing the targets, endpoints, signatures triggered, and exact contexts of the findings.
+</details>
+
+<br>
+
+## 🔎 The Detection Matrix
+
+Tracehop is bundled with **50+ battle-tested secret signatures**, spanning across numerous platforms:
+
+*   **Cloud Providers:** AWS Access/Secret Keys, Google Cloud Platform (Tokens, OAuth IDs, Service Accounts), Azure Storage Keys, DigitalOcean Tokens.
+*   **Infrastructure & DevOps:** GitHub (PAT, OAuth, App, Refresh Tokens), GitLab, Heroku, Datadog APIs.
+*   **Comms & Socials:** Slack (Webhooks, User/Bot Tokens), Twitter/X OAuth, Discord Webhooks, Telegram Bots, LinkedIn, Facebook.
+*   **Payments & Commerce:** Stripe (Live, Restricted, Test), Square Access & OAuth secrets.
+*   **Cryptographics:** JWT Tokens, Base64 API Keys, Private Keys (RSA, OpenSSH, PGP, Google Cloud).
+*   **Advanced Heuristics:** Generic fallback detection utilizing assignment entropy (`pwd`, `apikey`, `secret_key`, etc).
+
+<br>
+
+## 🛠️ Setup & Installation
+
+**Prerequisites:** Python 3.8+ required.
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/tracehop.git
+# 1. Clone the repository
+git clone https://github.com/Alinshan/tracehop.git
 cd tracehop
 
-# Install dependencies
+# 2. Install the required dependencies
 pip install -r requirements.txt
 ```
 
----
+<br>
 
-## 🚀 Usage
+## 🚀 Execution & Usage
 
-### Basic Scan
-Perform a deep scan on a target domain:
+Tracehop is designed to be plug-and-play.
+
+#### 1. Basic Domain Scan
+Perform a deep script scan aggressively against a single domain.
 ```bash
-python tracehop.py https://example.com
+python tracehop.py example.com
 ```
 
-### Advanced Options
-- **Specify Output**: Save results to a custom file.
-  ```bash
-  python tracehop.py https://example.com -o myscan.json
-  ```
-- **Silent Mode**: Suppress the banner and table for use in scripts.
-  ```bash
-  python tracehop.py https://example.com -s
-  ```
+#### 2. Advanced: Subdomain Expansion (Pro Feature)
+Utilize the `-s` or `--subdomains` flag to discover, resolve, and simultaneously scan all subdomains of a target. Highly recommended for bug bounty hunting.
+```bash
+python tracehop.py example.com --subdomains
+```
+
+#### 3. Output Management
+Target specific filenames for your auto-generated JSON reports.
+```bash
+python tracehop.py hackerone.com --subdomains --output h1_recon_report.json
+```
+
+#### 4. Stealth / Minimal Output
+Execute headlessly or suppress the rich banner aesthetics.
+```bash
+python tracehop.py target.com --silent
+```
+
+<br>
+
+## 🛡️ Demonstration Output
+*(JSON Output Extract)*
+
+```json
+{
+    "target": "example.com",
+    "timestamp": "20260402_150000",
+    "subdomains_found": [
+        "api.example.com",
+        "dev.example.com",
+        "example.com"
+    ],
+    "findings_count": 1,
+    "findings": [
+        {
+            "rule": "Stripe API Key",
+            "secret": "sk_live_51Jkh...2H",
+            "source": "https://example.com/assets/js/payment-bundle.js",
+            "context": "const STRIPE_KEY = 'sk_live_51Jkh..."
+        }
+    ]
+}
+```
+
+<br>
+
+## ⚖️ Legal Disclaimer
+
+Tracehop is constructed strictly for **educational purposes, defensive auditing, and authorized security research**. The authors and contributors are absolutely not responsible for any misuse, damage, or illegal activities conducted with this tool. Ensure you have overwhelming legal consent to scan and profile any target prior to utilizing Tracehop.
 
 ---
 
-## 🔒 Secrets Detected (Ruleset)
-
-Tracehop currently includes signatures for:
-*   AWS Access Keys & Secret Keys
-*   Google API & Firebase Keys
-*   Stripe Live & Test Secret Keys
-*   Slack Webhook URLs
-*   Twilio Account SIDs & Auth Tokens
-*   Heroku & Mailchimp API Keys
-*   GitHub Personal Access Tokens
-*   Generic Sensitive Keys (`password`, `secret`, `access_token`, etc.)
-
----
-
-## ⚖️ Disclaimer
-
-Tracehop is intended for **legal security research and authorized testing only**. Usage against targets without prior written consent is illegal and the author is not responsible for any misuse.
-
----
-
-#### Developed by Alinshan © 2026
+<div align="center">
+<b>Built with ⚔️ by Alinshan</b>
+</div>
