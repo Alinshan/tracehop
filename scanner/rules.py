@@ -1,0 +1,62 @@
+import re
+
+# Comprehensive list of regex rules for secret detection
+RULES = {
+    "AWS Access Key ID": r"AKIA[0-9A-Z]{16}",
+    "AWS Secret Access Key": r"aws(.{0,20})?['\"][0-9a-zA-Z\/+]{40}['\"]",
+    "Google API Key": r"AIza[0-9A-Za-z\\-_]{35}",
+    "Google Cloud Platform API Key": r"AIza[0-9A-Za-z\\-_]{35}",
+    "Google Cloud Platform OAuth Client ID": r"[0-9]+-[a-z0-9_]{32}\.apps\.googleusercontent\.com",
+    "Firebase API Key": r"AIza[0-9A-Za-z\\-_]{35}",
+    "Stripe API Key": r"sk_live_[0-9a-zA-Z]{24}",
+    "Stripe Restricted Key": r"rk_live_[0-9a-zA-Z]{24}",
+    "Stripe Test Key": r"sk_test_[0-9a-zA-Z]{24}",
+    "Slack Webhook": r"https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}",
+    "Slack User Token": r"xoxp-[0-9a-zA-Z]{12}-[0-9a-zA-Z]{12}-[0-9a-zA-Z]{12}-[a-z0-9]{32}",
+    "Slack Bot Token": r"xoxb-[0-9a-zA-Z]{12}-[0-9a-zA-Z]{12}-[a-z0-9]{24}",
+    "Twilio Account SID": r"AC[a-f0-9]{32}",
+    "Twilio Auth Token": r"[a-f0-9]{32}",
+    "GitHub Personal Access Token": r"ghp_[a-zA-Z0-9]{36}",
+    "GitHub OAuth Access Token": r"gho_[a-zA-Z0-9]{36}",
+    "GitHub App Token": r"ghs_[a-zA-Z0-9]{36}",
+    "GitHub Refresh Token": r"ghr_[a-zA-Z0-9]{36}",
+    "Heroku API Key": r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+    "Mailchimp API Key": r"[0-9a-fA-F]{32}-us[0-9]{1,2}",
+    "Mailgun API Key": r"key-[0-9a-zA-Z]{32}",
+    "SendGrid API Key": r"SG\.[0-9a-zA-Z\-_]{22}\.[0-9a-zA-Z\-_]{43}",
+    "Square Access Token": r"sq0atp-[0-9A-Za-z\\-_]{22}",
+    "Square OAuth Secret": r"sq0csp-[0-9A-Za-z\\-_]{44}",
+    "Telegram Bot Token": r"[0-9]{9}:[a-zA-Z0-9_-]{35}",
+    "Discord Bot Token": r"[a-zA-Z0-9_-]{24}\.[a-zA-Z0-9_-]{6}\.[a-zA-Z0-9_-]{27}",
+    "Discord Webhook": r"https://discordapp\.com/api/webhooks/[0-9]+/[a-zA-Z0-9_-]+",
+    "Cloudinary API Key": r"cloudinary://[0-9]{15}:[0-9a-zA-Z_-]{27}",
+    "Facebook Access Token": r"EAACEdEose0cBA[0-9A-Za-z]+",
+    "Twitter Access Token": r"[0-9]{18}-[a-zA-Z0-9]{40}",
+    "Twitter OAuth": r"[tT][wW][iI][tT][tT][eE][rR](.{0,20})?['\"][0-9a-zA-Z]{35,44}['\"]",
+    "LinkedIn Client ID": r"linkedin(.{0,20})?['\"][0-9a-z]{14}['\"]",
+    "LinkedIn Secret Key": r"linkedin(.{0,20})?['\"][0-9a-z]{16}['\"]",
+    "Adobe Client ID": r"adobe(.{0,20})?['\"][0-9a-f]{32}['\"]",
+    "Adobe Client Secret": r"p8e_(.{0,20})?['\"][0-9a-f]{32}['\"]",
+    "Artifactory API Key": r"(?:\s|:|\"|')AKC[a-zA-Z0-9]{10,}",
+    "Artifactory Password": r"(?:\s|:|\"|')AP[a-zA-Z0-9]{10,}",
+    "AWS MWS Auth Token": r"amzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+    "Azure Storage Account Key": r"[a-zA-Z0-9\/+]{88}== ",
+    "Azure Connection String": r"AccountName=[a-zA-Z0-9]+;AccountKey=[a-zA-Z0-9\/+]{88}== ",
+    "Datadog API Key": r"[a-z0-9]{32}",
+    "DigitalOcean Access Token": r"dop_v1_[a-z0-9]{64}",
+    "Figma Access Token": r"figd_[a-zA-Z0-9]{20,40}",
+    "GitLab Personal Access Token": r"glpat-[0-9a-zA-Z\-]{20}",
+    "HubSpot API Key": r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+    "JWT Token": r"eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+",
+    "Private Key (RSA)": r"-----BEGIN RSA PRIVATE KEY-----",
+    "Private Key (SSH)": r"-----BEGIN OPENSSH PRIVATE KEY-----",
+    "Private Key (PGP)": r"-----BEGIN PGP PRIVATE KEY BLOCK-----",
+    "Google Private Key": r"\"private_key\":\s*\"-----BEGIN PRIVATE KEY-----\\n[a-zA-Z0-9\+\/\\n]+\\n-----END PRIVATE KEY-----\\n\"",
+    "Generic Secret": r"(?i)(api_key|api_token|apikey|apitoken|secret|token|password|auth|access_token|client_secret|client_id|private_key|secret_key)(.{0,20})?['\"][0-9a-zA-Z\/\+_\-]{16,128}['\"]",
+}
+
+def get_compiled_rules():
+    compiled = {}
+    for name, pattern in RULES.items():
+        compiled[name] = re.compile(pattern)
+    return compiled

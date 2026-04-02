@@ -1,0 +1,13 @@
+{
+    "target": "https://google.com",
+    "timestamp": "20260402_100607",
+    "findings_count": 1,
+    "findings": [
+        {
+            "rule": "Twilio Auth Token",
+            "secret": "91f30755d6a6b787dcc2a4062e6e9824",
+            "source": "inline",
+            "context": "l, null, [\"1\", \"gci_91f30755d6a6b787dcc2a4062e6e9824.js\", \"googleapis.cl"
+        }
+    ]
+}
