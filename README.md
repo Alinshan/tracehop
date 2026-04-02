@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/tracehop_phantom_cat_banner.png" alt="Tracehop Phantom Banner" width="800">
+  <img src="assets/logo.png" alt="Tracehop Logo" width="200">
   <br>
   <h1>Tracēhop 🚀</h1>
   <p><b>Advanced JS Reconnaissance & Automated Pentest Orchestrator — v3.1 (Elite)</b></p>
@@ -12,6 +12,12 @@
   *An asynchronous, high-precision intelligence suite for modern web reconnaissance.*
 
   ---
+</div>
+
+<br>
+
+<div align="center">
+  <img src="assets/tracehop_phantom_cat_banner.png" alt="Tracehop Phantom Banner" width="800">
 </div>
 
 <br>
