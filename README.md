@@ -1,7 +1,7 @@
 <div align="center">
 
 # Tracēhop 🚀
-**Premium JS Reconnaissance & Secret Scanning Engine — v2.0 (Pro)**
+**Premium JS Reconnaissance & Pentest Orchestrator — v3.0 (Elite)**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
 [![AsyncIO Powered](https://img.shields.io/badge/execution-AsyncIO-brightgreen.svg?style=for-the-badge)](https://docs.python.org/3/library/asyncio.html)
@@ -16,9 +16,9 @@
 
 <br>
 
-**Tracehop** is an asynchronous, high-performance web reconnaissance tool. It completely automates the extraction and deep-scanning of JavaScript files and inline scripts across modern web applications to identify exposed secrets, hardcoded credentials, and critical API integrations.
+**Tracehop** is an asynchronous, high-performance web reconnaissance and pentesting tool. It completely automates the extraction and deep-scanning of JavaScript files and inline scripts across modern web applications to identify exposed secrets, hardcoded credentials, and critical API integrations.
 
-With the release of **v2.0 (Pro)**, Tracehop now supports lightning-fast **passive subdomain enumeration** and boasts a comprehensive detection engine of **over 50 complex regex signatures**.
+With the release of **v3.0 (Elite)**, Tracehop now features a **Professional Desktop GUI**, automated **Pentest Orchestration** (IDOR/Source Maps), and an extensible **YAML-based rule engine**.
 
 <br>
 
@@ -37,21 +37,21 @@ Passively query the `crt.sh` Certificate Transparency logs to discover all activ
 </details>
 
 <details open>
-<summary><b>🧠 Deep JS Intelligence & Beautification</b></summary>
+<summary><b>🖥️ Pro Desktop GUI (New in v3.0)</b></summary>
 <br>
-Automatically fetches both remote scripts (`<script src="...">`) and inline JavaScript. Utilizing heuristic-based pre-processing, Tracehop detects and natively beautifies minified (uglified) scripts prior to regex matching to guarantee high-fidelity detection and minimum false positives.
+A full PySide6-based graphical interface for researchers who prefer a dashboard. Monitor scans in real-time, filter findings by severity, and browse logs with ease.
 </details>
 
 <details open>
-<summary><b>💎 Premium Terminal Experience</b></summary>
+<summary><b>📦 Extensible YAML Rules & UA Rotation</b></summary>
 <br>
-Built on top of the `rich` library. Enjoy dynamic spinners, live elapsed time tracking, color-coded findings matrices, and summarized scanning contexts straight in your terminal. No more cluttered CLI outputs.
+Inject your own custom scanning signatures via YAML files and evade WAFs by providing a list of User-Agents for randomized request headers.
 </details>
 
 <details open>
-<summary><b>📊 Automated JSON Telemetry</b></summary>
+<summary><b>🛡️ Automated Pentest Orchestration</b></summary>
 <br>
-Security scans mean nothing without data. Tracehop automatically compiles and ejects structured, timestamped JSON reports detailing the targets, endpoints, signatures triggered, and exact contexts of the findings.
+A four-phase workflow that hunts for more than just secrets: IDOR probing on API endpoints, source map disclosure verification, and 1-click integration with Nuclei/Ffuf.
 </details>
 
 <br>
@@ -86,18 +86,34 @@ pip install -r requirements.txt
 
 ## 🚀 Execution & Usage
 
-Tracehop is designed to be plug-and-play.
+Tracehop is designed to be plug-and-play and features both an interactive UI and command-line arguments.
 
-#### 1. Basic Domain Scan
-Perform a deep script scan aggressively against a single domain.
+#### 1. Professional Desktop GUI (New)
+Launch the standalone dashboard for a visual experience:
 ```bash
-python tracehop.py example.com
+python tracehop.py --gui
 ```
 
-#### 2. Advanced: Subdomain Expansion (Pro Feature)
-Utilize the `-s` or `--subdomains` flag to discover, resolve, and simultaneously scan all subdomains of a target. Highly recommended for bug bounty hunting.
+#### 2. Advanced: Pentest Suite (Automated Orchestration)
+Run the automated vulnerability verification engine:
 ```bash
-python tracehop.py example.com --subdomains
+# Setup tools on Windows (Nuclei, Ffuf, etc)
+./setup_env.ps1
+
+# Launch the automated attack
+python tracehop.py example.com --pentest
+```
+
+#### 3. Custom Rule Injection (YAML)
+Provide your own signatures in a Yumi-compatible format:
+```bash
+python tracehop.py example.com --rules my_custom_rules.yml
+```
+
+#### 4. Stealth Mode (User-Agent Rotation)
+Pass a text file of User-Agents to randomize each request:
+```bash
+python tracehop.py filter.com --user-agents uas.txt
 ```
 
 #### 3. Output Management

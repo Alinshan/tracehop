@@ -1,0 +1,3 @@
+[console_scripts]
+meow = tracehop:cli
+tracehop = tracehop:cli

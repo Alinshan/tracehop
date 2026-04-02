@@ -1,0 +1,12 @@
+README.md
+setup.py
+tracehop.py
+scanner/__init__.py
+scanner/engine.py
+scanner/rules.py
+tracehop.egg-info/PKG-INFO
+tracehop.egg-info/SOURCES.txt
+tracehop.egg-info/dependency_links.txt
+tracehop.egg-info/entry_points.txt
+tracehop.egg-info/requires.txt
+tracehop.egg-info/top_level.txt

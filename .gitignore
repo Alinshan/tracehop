@@ -4,20 +4,27 @@ __pycache__/
 *$py.class
 
 # Tracehop generated reports
+reports/
 *.json
-tracehop_*.json
 
 # Virtual environments
 venv/
 env/
 ENV/
 .env
+.venv/
+
 
 # IDEs and Editors
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Scratch utilities
+image_to_ascii.py
+cat_ascii.txt
+temp_yumi/
 
 # MacOS
 .DS_Store
