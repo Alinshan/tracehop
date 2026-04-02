@@ -147,5 +147,5 @@ Tracehop is constructed strictly for **educational purposes, defensive auditing,
 ---
 
 <div align="center">
-<b>By Alinshan</b>
+<b>©Alinshan</b>
 </div>
