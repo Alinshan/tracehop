@@ -16,9 +16,6 @@
 
 <br>
 
-<div align="center">
-  <img src="assets/tracehop_phantom_cat_banner.png" alt="Tracehop Phantom Banner" width="800">
-</div>
 
 <br>
 
