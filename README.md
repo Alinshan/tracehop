@@ -8,7 +8,7 @@
 [![Terminal UI](https://img.shields.io/badge/UI-Rich-magenta.svg?style=for-the-badge)](https://github.com/Textualize/rich)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)]()
 
-*Engineered by **Alinshan** for security researchers, bug bounty hunters, and elite penetrations testers.*
+*For security researchers, bug bounty hunters, and penetrations testers.*
 
 ---
 
@@ -147,5 +147,5 @@ Tracehop is constructed strictly for **educational purposes, defensive auditing,
 ---
 
 <div align="center">
-<b>Built with ⚔️ by Alinshan</b>
+<b>By Alinshan</b>
 </div>
