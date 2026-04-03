@@ -5,9 +5,10 @@ with open('requirements.txt') as f:
 
 setup(
     name="tracehop",
-    version="2.0.0",
+    version="3.1.0",
     description="Tracehop - Premium JS Recon & Secret Scanner",
     author="Alinshan",
+    license="MIT",
     packages=find_packages(),
     py_modules=["tracehop"],
     install_requires=requirements,
@@ -17,4 +18,10 @@ setup(
             'meow = tracehop:cli',
         ],
     },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Security",
+    ],
 )

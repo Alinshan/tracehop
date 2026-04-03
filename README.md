@@ -118,6 +118,9 @@ Tracehop generates audit-ready reports in both **JSON** and **Markdown** formats
 
 ---
 
+## 📄 License
+Tracehop is released under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
+
 <div align="center">
   <h3>Legal Disclaimer</h3>
   <p><i>Tracehop is strictly for authorized security research, defensive auditing, and educational use. Unauthorized scanning of targets is strictly prohibited.</i></p>
