@@ -125,5 +125,5 @@ Tracehop is released under the **MIT License**. See the [LICENSE](LICENSE) file 
   <h3>Legal Disclaimer</h3>
   <p><i>Tracehop is strictly for authorized security research, defensive auditing, and educational use. Unauthorized scanning of targets is strictly prohibited.</i></p>
   <br>
-  <b>© 2026 Alinshan — Phantom Edition</b>
+  <b>© 2026 Alinshan</b>
 </div>
