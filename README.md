@@ -2,12 +2,12 @@
   <img src="assets/logo.png" alt="Tracehop Logo" width="200">
   <br>
   <h1>Tracēhop 🚀</h1>
-  <p><b>Advanced JS Reconnaissance & Automated Pentest Orchestrator — v1.1</b></p>
+  <p><b>Advanced JS Reconnaissance & Automated Pentest Orchestrator — v3.1 (Elite)</b></p>
 
   [![Python 3.8+](https://img.shields.io/badge/python-3.8+-00b0ff.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
   [![AsyncIO Powered](https://img.shields.io/badge/execution-AsyncIO-brightgreen.svg?style=for-the-badge)](https://docs.python.org/3/library/asyncio.html)
   [![UI Theme](https://img.shields.io/badge/UI-Phantom_Blue-00b0ff.svg?style=for-the-badge)](https://github.com/Alinshan/tracehop)
-  [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)]()
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
   *An asynchronous, high-precision intelligence suite for modern web reconnaissance.*
 
@@ -21,7 +21,7 @@
 
 **Tracehop** is an enterprise-grade web reconnaissance and automated pentesting tool designed for ultimate speed and stealth. It automates the extraction, auditing, and deep-scanning of infrastructure, JavaScript files, and API endpoints to surface exposed secrets, hardcoded credentials, and critical security vulnerabilities.
 
-With the **v1.1 Tracehop integrates a dedicated **Phase 0: Technical Intelligence** stage, a professional **PySide6 Desktop GUI**, and a 4-phase automated **Pentest Orchestration** engine.
+With the **v3.1 (Elite)** update, Tracehop integrates a dedicated **Phase 0: Technical Intelligence** stage, a professional **PySide6 Desktop GUI**, and a 4-phase automated **Pentest Orchestration** engine.
 
 <br>
 

@@ -112,9 +112,51 @@ class TracehopGUI(QtWidgets.QMainWindow):
 
         # Sidebar Header
         header = QtWidgets.QLabel("TRACEHOP")
-        header.setStyleSheet("color: #00b0ff; font-weight: bold; font-size: 24px; margin-bottom: 30px;")
+        header.setStyleSheet("color: #00b0ff; font-weight: bold; font-size: 24px; margin-bottom: 5px;")
         header.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(header)
+
+        version_label = QtWidgets.QLabel("v3.1 (Elite Edition)")
+        version_label.setStyleSheet("color: #555; font-size: 11px; margin-bottom: 20px;")
+        version_label.setAlignment(QtCore.Qt.AlignCenter)
+        sidebar_layout.addWidget(version_label)
+
+        # Badge Row Section
+        badge_container = QtWidgets.QWidget()
+        badge_row = QtWidgets.QHBoxLayout(badge_container)
+        badge_row.setContentsMargins(0, 0, 0, 15)
+        badge_row.setSpacing(5)
+
+        def create_badge_label(text, color="#00b0ff"):
+            lbl = QtWidgets.QLabel(text.upper())
+            lbl.setAlignment(QtCore.Qt.AlignCenter)
+            lbl.setStyleSheet(f"background-color: {color}; color: #08121a; font-weight: bold; font-size: 8px; border-radius: 2px; padding: 2px 4px;")
+            return lbl
+
+        badge_row.addWidget(create_badge_label("Python 3.8+"))
+        badge_row.addWidget(create_badge_label("Asyncio", "#00e676"))
+        badge_row.addWidget(create_badge_label("Phantom Blue"))
+        
+        license_btn = QtWidgets.QPushButton("MIT")
+        license_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        license_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #00b0ff;
+                color: #08121a;
+                font-weight: bold;
+                font-size: 8px;
+                border-radius: 2px;
+                padding: 1px 4px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #00e676;
+            }
+        """)
+        license_btn.clicked.connect(self.show_license)
+        badge_row.addWidget(license_btn)
+
+        sidebar_layout.addWidget(badge_container)
 
         sidebar_layout.addWidget(QtWidgets.QLabel("<b>Target Configuration</b>"))
         self.target_input = QtWidgets.QLineEdit()
@@ -410,6 +452,13 @@ class TracehopGUI(QtWidgets.QMainWindow):
                 ports_root = QtWidgets.QTreeWidgetItem(self.recon_tree, ["Open Ports", ""])
                 QtWidgets.QTreeWidgetItem(ports_root, ["Ports", ", ".join(map(str, recon_data["ports"]))])
                 ports_root.setExpanded(True)
+
+    def show_license(self):
+        license_path = os.path.join(os.getcwd(), "LICENSE")
+        if os.path.exists(license_path):
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(license_path))
+        else:
+            QtWidgets.QMessageBox.information(self, "License", "MIT License (c) 2026 Alinshan")
 
 def run_gui():
     app = QtWidgets.QApplication(sys.argv)
