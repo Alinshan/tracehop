@@ -1,6 +1,6 @@
 # 🛡️ Tracehop Advanced Usage Guide
 
-Tracehop Elite v3.0 supports professional-grade configuration for custom secret detection, stealth scanning, and deep technical intelligence.
+Tracehop v1.1 supports professional-grade configuration for custom secret detection, stealth scanning, and deep technical intelligence.
 
 ## 🔍 Phase 0: Technical Intelligence (Advanced Reconnaissance)
 Tracehop now performs a comprehensive "Deep Recon" before starting the JS scan. This includes:

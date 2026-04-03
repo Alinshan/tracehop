@@ -116,7 +116,7 @@ class TracehopGUI(QtWidgets.QMainWindow):
         header.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(header)
 
-        version_label = QtWidgets.QLabel("v3.1 (Elite Edition)")
+        version_label = QtWidgets.QLabel("v1.1 (© alinshan)")
         version_label.setStyleSheet("color: #555; font-size: 11px; margin-bottom: 20px;")
         version_label.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_layout.addWidget(version_label)
